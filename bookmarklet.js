@@ -114,7 +114,7 @@
 		for(var i=0; i<document.images.length; i++){
 			var dim = elementDimensions(document.images[i]);
 			if((dim.width>60 || dim.height>60) && dim.width>40 && dim.height>40) {
-				imgs.push({src: document.images[i].src, page_url: window.location.href});
+				imgs.push({src: document.images[i].src, page_url: window.location.href, dim: dim});
 			}
 		}
 		var iframes = document.getElementsByTagName("iframe");
@@ -123,7 +123,7 @@
 				var doc = iDoc(iframes[j]);
 				var dim = elementDimensions(document.images[i]);
 				if((dim.width>60 || dim.height>60) && dim.width>40 && dim.height>40) {
-					imgs.push({src: document.images[i].src, page_url: window.location.href});
+					imgs.push({src: document.images[i].src, page_url: window.location.href, dim: dim});
 				}
 			} catch(err) {
 				console.log('Error', err);
@@ -131,9 +131,5 @@
 		}
 		return imgs;
 	}
-	
+	console.log(getImages());
 })();
-
-https://raw.github.com/biscoe916/ImageGrab/master/bookmarklet.js
-
-javascript:var script=document.createElement('script');script.src='https://raw.github.com/biscoe916/ImageGrab/master/bookmarklet.js';document.body.appendChild(script);void(0);
