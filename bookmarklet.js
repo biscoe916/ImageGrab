@@ -1,5 +1,14 @@
 (function() {
 	'use strict';
+	// Properties
+	var properties = {
+		upload_script: 'http://www.tylerbiscoe.com/testbook/ul.php',
+		secret_key: 'CHANGEME', // Update secret key in ul.php, or whichever custom upload script you use to match this key.
+		min_image_h: 60,
+		min_image_w: 60,
+		check_iframes: true 
+	};
+	
 	// Helper functions
 	function is_set(o) {
 		return o !== undefined ? true : false;
@@ -127,14 +136,7 @@
 		s1.onload = callback_fn;
 	}
 	
-	// Properties
-	var properties = {
-		upload_script: 'http://www.tylerbiscoe.com/testbook/ul.php',
-		secret_key: 'CHANGEME', // Update secret key in ul.php, or whichever custom upload script you use to match this key.
-		min_image_h: 60,
-		min_image_w: 60,
-		check_iframes: true 
-	};
+	
 	// Hide flash embeds, fix for this may come later.
 	function hideFlash() {
 		var embed = document.getElementsByTagName('embed');
