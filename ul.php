@@ -26,6 +26,7 @@ if($secret_key == $sk) {
 		$ul_file = fopen($directory.$ul_name, "wb");
 		while(!feof($file)) {
 			fwrite($ul_file,fread($file,1024 * 128),1024 * 128);
+			echo "...";
 		}
 		echo "You Win.";
 	}
