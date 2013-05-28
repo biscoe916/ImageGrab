@@ -5,8 +5,6 @@ $secret_key = "CHANGEME";
 $directory = "./";
 
 
-
-
 // Get values
 $url = trim($_GET["img_url"]);
 $sk = $_GET["secret_key"];
@@ -26,11 +24,15 @@ if($secret_key == $sk) {
 		$ul_file = fopen($directory.$ul_name, "wb");
 		while(!feof($file)) {
 			fwrite($ul_file,fread($file,1024 * 128),1024 * 128);
-			echo "...";
 		}
-		echo "You Win.";
+		$return = array();
+		$return['status'] = 'success';
+		$return['url'] = $directory.$ul_name;
+		echo json_encode($return);
 	}
 } else {
-	echo "NOT AUTHORIZED";
+	$return = array();
+	$return['status'] = 'fail';
+	echo json_encode($return);
 }
 ?>

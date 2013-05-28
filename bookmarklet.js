@@ -135,7 +135,25 @@
 		};
 		s1.onload = callback_fn;
 	}
-	
+	function ajax_tx(script, args, callback_fn) {
+		var full_url = script +'?', ret, xmlhttp;
+		for(var ind in args) {
+			full_url +=ind + '=' + args[ind] +'&';
+		}
+		if(window.XMLHttpRequest) {
+			xmlhttp=new XMLHttpRequest();
+		} else {
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xmlhttp.onreadystatechange=function() {
+			if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+				ret = JSON.parse(xmlhttp.responseText);
+				callback_fn(ret);
+			}
+		}
+		xmlhttp.open("GET",full_url,true);
+		xmlhttp.send();
+	}
 	
 	// Hide flash embeds, fix for this may come later.
 	function hideFlash() {
@@ -218,11 +236,17 @@
 	
 	// Upload Screen
 	function uploadSetupPage(img_obj) {
-		var src = properties.upload_script+'?img_url='+img_obj.src+'&secret_key='+properties.secret_key;
+		/*var src = properties.upload_script+'?img_url='+img_obj.src+'&secret_key='+properties.secret_key;
 		var iframe = addElement('iframe', upload_screen, {
 			width: '100%', 
 			height: '100%'
-		}, {src: src});
+		}, {src: src});*/
+		ajax_tx(properties.upload_script, {
+			img_url: img_obj.src,
+			secret_key: properties.secret_key
+		}, function(data) {
+			console.log('Data:', data);
+		});
 		images_screen.style.display = 'none';
 		upload_screen.style.display = '';
 	};
