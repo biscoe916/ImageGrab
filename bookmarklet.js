@@ -129,11 +129,11 @@
 	
 	// Properties
 	var properties = {
-		upload_script: '',
-		upload_paths: [],
+		upload_script: 'http://www.tylerbiscoe.com/testbook/ul.php',
+		secret_key: 'CHANGEME', // Update secret key in ul.php, or whichever custom upload script you use to match this key.
 		min_image_h: 60,
 		min_image_w: 60,
-		check_iframes: true
+		check_iframes: true 
 	};
 	// Hide flash embeds, fix for this may come later.
 	function hideFlash() {
@@ -215,24 +215,14 @@
 	}
 	
 	// Upload Screen
-	
 	function uploadSetupPage(img_obj) {
-		var socket = new easyXDM.Socket({
-			remote: 'http://b.rocketos.com/members/os_add.php?url='+img_obj.src+'&page_url='+window.location.href,
-			onMessage: function(message, origin){
-				if(message === 'close') {
-					
-				}
-				if(message === 'get_info') {
-					var t_msg = 'INF' + img_obj.src + '|' + window.location.href + '|' + window.location.href;
-					socket.postMessage(t_msg);
-				}
-			},
-			onReady: function() {
-			},
-			container: upload_screen, 
-			props: {style: {width: '100%', height: '100%'}}
-		});
+		var src = properties.upload_script+'?img_url='+img_obj.src+'&secret_key='+properties.secret_key;
+		var iframe = addElement('iframe', upload_screen, {
+			width: '100%', 
+			height: '100%'
+		}, {src: src});
+		images_screen.style.display = 'none';
+		upload_screen.style.display = '';
 	};
 	
 	// Draw
@@ -291,9 +281,7 @@
 	function init() {
 		getAndDrawImages();
 	}
-	loadScript('http://www.tylerbiscoe.com/vb/easyXDM/easyXDM.debug.js', function() {
-		init();
-	});
+	init();
 })();
 
 
