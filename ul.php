@@ -8,7 +8,7 @@ $sk = urldecode($_GET["secret_key"]);
 $directory = urldecode($_GET["directory"]);
 $resp_str = $_GET['resp_str'];
 // Do we have all of the data?
-if(!$url || !$directory || !sk) {
+if(!$url || !$directory || !$sk || !$resp_str) {
 	exit;
 }
 // Save
