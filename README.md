@@ -5,7 +5,7 @@ With just 2-clicks, ImageGrab allows you to quickly and easily save images from 
 
 #####Example bookmark:
 
-javascript:var s= document.createElement('script');s.type='text/javascript';document.body.appendChild(s);s.src='YOURSITE.com/bookmarklet.js';void(0);
+javascript:var s= document.createElement('script');s.type='text/javascript';document.body.appendChild(s);s.src='http://www.YOURSITE.com/bookmarklet.js';void(0);
 
 #####Notes: 
 - allow_url_fopen should be enabled in php.ini
