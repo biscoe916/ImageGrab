@@ -13,7 +13,7 @@
 	} elseif($secret_key != $sk) { // Make sure we're authorized
 		$return['status'] = 'failed';
 		$return['fail_reason'] = 'Unauthorized: Keys must match.';
-	} else {
+	} else { // Now save the file
 		if(file_put_contents($new_img, file_get_contents($url))) {
 			$return['status'] = 'success';
 			$return['url'] = $directory.$new_img;
