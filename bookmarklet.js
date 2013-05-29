@@ -328,11 +328,15 @@ pResponse = (function() {
 				image.container.style.backgroundColor = '';
 			};
 			image.container.onclick = function(e) {
-				image.confirm_div.style.display = '';
-				for(var i = 0;i < drawn_images.length;i++) {
-					drawn_images[i].confirm_div.style.display = 'none';
-				};
-				image.confirm_div.style.display = '';
+				if(properties.ask_for_confirmation === true) {
+					image.confirm_div.style.display = '';
+					for(var i = 0;i < drawn_images.length;i++) {
+						drawn_images[i].confirm_div.style.display = 'none';
+					};
+					image.confirm_div.style.display = '';
+				} else {
+					image.upload(img_obj);
+				}
 			};
 			return image;
 		};
@@ -402,7 +406,30 @@ pResponse = (function() {
 		position: 'relative',
 		zIndex: '1'
 	});
-	title_div.innerHTML = 'Select an image';
+	title_div.innerHTML = 'ImageGrab: ';
+	var sub_title_span = addElement('span', title_div, {
+		fontWeight: 'normal'
+	});
+	sub_title_span.innerHTML = ' Select images below';
+	var close_button = addElement('div', title_div, {
+		position: 'absolute',
+		right: '0px',
+		top: '0px',
+		lineHeight: '55px',
+		height: '55px',
+		fontFamily: 'arial',
+		color: 'black',
+		fontSize: '14px',
+		borderLeft: 'thin solid darkgrey',
+		cursor: 'pointer',
+		paddingLeft: '10px',
+		paddingRight: '10px',
+		fontWeight: 'normal'
+	});
+	close_button.innerHTML = 'Finished';
+	close_button.onclick = function() {
+		removeElement(obscure);
+	};
 	var images_screen = addElement('div', main_container, {
 		position: 'absolute',
 		top: '55px',
@@ -421,14 +448,8 @@ pResponse = (function() {
 		backgroundColor: 'rgb(241, 237, 229)',
 		display: 'none'
 	});
-	var image_preview
-	
-	
-	function init() {
-		getAndDrawImages();
-	}
+	getAndDrawImages();
 	hideFlash();
-	init();
 	return pResponse;
 })();
 
