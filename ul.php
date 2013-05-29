@@ -13,7 +13,7 @@ if(!$url || !$directory || !$sk || !$resp_str) {
 	$return['fail_reason'] = 'Insufficient Data';
 	$return['resp_str'] = $resp_str;
 	echo 'pResponse('.json_encode($return).');';
-} else if($secret_key != $sk) {
+} elseif($secret_key != $sk) {
 	$return['status'] = 'failed';
 	$return['fail_reason'] = 'Unauthorized: Keys must match.';
 	$return['resp_str'] = $resp_str;
