@@ -395,17 +395,3 @@ var pResponse = (function() {
 	hideFlash();
 	return pResponse;
 })();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
