@@ -2,8 +2,8 @@ var pResponse = (function() {
 	'use strict';
 	// Properties
 	var properties = {
-		upload_script: 'http://www.yoursite.com/ImageGrabber/ul.php',
-		upload_directory: '//www.yoursite.com/ImageGrabber/', // Use full path as in this example
+		upload_script: 'http://www.yoursite.com/imagegrabber/ul.php',
+		upload_directory: 'http://www.yoursite.com/imagegrabber/', // Use full path as in this example
 		secret_key: 'CHANGEME', // Update secret key in ul.php, or whichever custom upload script you use to match this key.
 		min_image_h: 120,
 		min_image_w: 120,
