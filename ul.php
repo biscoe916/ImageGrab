@@ -7,7 +7,6 @@
 	$directory = urldecode($_GET["directory"]);
 	$resp_str = $_GET['resp_str'];
 	$new_image_name = rand(1,9999).basename($url);
-	
 	if(!$url || !$directory || !$sk || !$resp_str) { // Ensure we have all of the required data
 		$return['status'] = 'failed';
 		$return['fail_reason'] = 'Missing Data';
