@@ -1,4 +1,4 @@
-pResponse = (function() {
+var pResponse = (function() {
 	'use strict';
 	// Properties
 	var properties = {
@@ -11,30 +11,6 @@ pResponse = (function() {
 		ask_for_confirmation: true
 	}, resp_fns = {};
 	// Helper functions
-	function is_set(o) {
-		return o !== undefined ? true : false;
-	}
-	function not_set(o) {
-		return o === undefined ? true : false;
-	}
-	function observe(obj, type, fn) {
-	  if(obj.attachEvent) {
-		obj['e'+type+fn] = fn;
-		obj[type+fn] = function(){obj['e'+type+fn](window.event);}
-		obj.attachEvent('on'+type, obj[type+fn]);
-	  } else
-		obj.addEventListener(type, fn, false);
-	}
-	function stopObserve(obj, type, fn) {
-	  if (obj.detachEvent) {
-		obj.detachEvent('on'+type, obj[type+fn]);
-		obj[type+fn] = null;
-	  } else
-		obj.removeEventListener(type, fn, false);
-	}
-	function getEventElement(e) {
-		return e.target || e.srcElement;
-	}
 	function applyStyle(ele, style, val) {
 		switch(style) {
 			case 'boxShadow':
@@ -93,33 +69,6 @@ pResponse = (function() {
 		var w = ele.clientWidth; var h = ele.clientHeight; /* get dims */
 		els.display = Disp0; els.position = Pos0; els.visibility = Vis0; /* restore original */
 		return {width: w, height: h};
-	}
-	function elementPosition(ele, wrt_ele) {
-		var get_offset = function(obj, offset) {
-			if (!obj) return;
-			offset.x += obj.offsetLeft;
-			offset.y += obj.offsetTop;
-			get_offset(obj.offsetParent, offset);
-		}
-		var get_scroll = function(obj, scroll) {
-			if (!obj) return;
-			scroll.x += obj.scrollLeft;
-			scroll.y += obj.scrollTop;
-			if (obj.tagName.toLowerCase() !== 'html') {get_scroll(obj.parentNode, scroll);}
-		}
-		var offset = {x:0, y:0};
-		get_offset(ele, offset);
-		var scroll = {x:0, y:0};
-		get_scroll(ele.parentNode, scroll);
-		var ret = {};
-		ret.left = offset.x - scroll.x;
-		ret.top = offset.y - scroll.y;
-		if(is_set(wrt_ele)) {
-			var wrt = NS.dom.element_position(wrt_ele);
-			ret.left -= wrt.left;
-			ret.top -= wrt.top;
-		}
-		return(ret);
 	}
 	function getIframeDocument(iFrame) {
 		return iFrame.contentDocument ? iFrame.contentDocument : iFrame.contentWindow.document;
@@ -364,12 +313,6 @@ pResponse = (function() {
 		}
 		return imgs;
 	}
-	// Upload Screen
-	function uploadSetupPage(img_obj) {
-		images_screen.style.display = 'none';
-		upload_screen.style.display = '';
-	
-	};
 	// Draw
 	var obscure = addElement('div', document.body, {
 			position: 'fixed',
@@ -429,6 +372,7 @@ pResponse = (function() {
 	close_button.innerHTML = 'Finished';
 	close_button.onclick = function() {
 		removeElement(obscure);
+		showFlash();
 	};
 	var images_screen = addElement('div', main_container, {
 		position: 'absolute',
@@ -438,15 +382,6 @@ pResponse = (function() {
 		overflow: 'auto',
 		backgroundColor: 'white',
 		zIndex: '0'
-	});
-	var upload_screen = addElement('div', main_container, {
-		position: 'absolute',
-		top: '55px',
-		bottom: '0px',
-		width: '100%',
-		overflow: 'auto',
-		backgroundColor: 'rgb(241, 237, 229)',
-		display: 'none'
 	});
 	getAndDrawImages();
 	hideFlash();
