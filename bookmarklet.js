@@ -3,11 +3,12 @@ pResponse = (function() {
 	// Properties
 	var properties = {
 		upload_script: 'http://www.tylerbiscoe.com/testbook/ul.php',
-		upload_directory: '//www.tylerbiscoe.com/testbook/',
+		upload_directory: '//www.tylerbiscoe.com/testbook/', // Use full path as in this example
 		secret_key: 'CHANGEME', // Update secret key in ul.php, or whichever custom upload script you use to match this key.
-		min_image_h: 60,
-		min_image_w: 60,
-		check_iframes: true
+		min_image_h: 120,
+		min_image_w: 120,
+		check_iframes: true,
+		ask_for_confirmation: true
 	}, resp_fns = {};
 	// Helper functions
 	function is_set(o) {
@@ -143,14 +144,12 @@ pResponse = (function() {
 		s1.onload = callback_fn;
 	}
 	function jsonP(script, args, callback_fn) {
-		var full_url = script +'?', ret, xmlhttp;
+		var full_url = script +'?', rand = gen_uuid(), ret, xmlhttp;
 		for(var ind in args) {
 			full_url +=ind + '=' + args[ind] +'&';
 		}
-		var rand = gen_uuid();
 		full_url += 'resp_str=' + rand;
 		resp_fns[rand] = callback_fn;
-		console.log(rand);
 		loadScript(full_url, function() {
 			console.log('Do nothing');
 		});
@@ -158,6 +157,8 @@ pResponse = (function() {
 	function pResponse(data) {
 		if(typeof resp_fns[data.resp_str] !== 'undefined') {
 			resp_fns[data.resp_str](data);
+		} else {
+			console.log('Error: Callback function not defined');
 		}
 	}
 	// Hide flash embeds, fix for this may come later.
@@ -165,18 +166,29 @@ pResponse = (function() {
 		var embed = document.getElementsByTagName('embed');
 		var object = document.getElementsByTagName('object');
 		for(var i = 0; i < embed.length; i++){
-			embed[i].temp_storage = embed[i].style.display;
+			embed[i].temp_storage = embed[i].style.visibility;
 			embed[i].style.visibility = 'hidden';
 		}
 
 		for(var i = 0; i < object.length; i++){
-			object[i].temp_storage = object[i].style.display;
+			object[i].temp_storage = object[i].style.visibility;
 			object[i].style.visibility = 'hidden';
+		}
+	}
+	function showFlash() {
+		var embed = document.getElementsByTagName('embed');
+		var object = document.getElementsByTagName('object');
+		for(var i = 0; i < embed.length; i++){
+			embed[i].style.visibility = object[i].temp_storage
+		}
+
+		for(var i = 0; i < object.length; i++){
+			object[i].style.visibility = object[i].temp_storage
 		}
 	}
 	// Returns an array of all images on the page
 	function getAndDrawImages() {
-		var imgs = [], ind;
+		var imgs = [], drawn_images = [], ind;
 		var draw_image = function(img_obj) {
 			var image = {};
 			image.container = addElement('div', images_screen, {
@@ -188,21 +200,141 @@ pResponse = (function() {
 				borderRight: 'thin solid rgb(230,230,230)',
 				borderBottom: 'thin solid rgb(230,230,230)',
 				textAlign: 'center',
-				cursor: 'pointer'
+				cursor: 'pointer',
+				position: 'relative',
+				overflow: 'hidden'
 			});
 			image.image = addElement('img', image.container, {
 				maxWidth: '200px',
-				maxHeight:'200px'
+				maxHeight:'200px',
+				boxShadow: '0px 0px 2px black'
 			}, {src: img_obj.src});
+			image.confirm_div = addElement('div', image.container, {
+				width: '100%',
+				position: 'absolute',
+				bottom: '0px',
+				left: '0px',
+				backgroundColor: 'white',
+				paddingTop: '5px',
+				paddingBottom: '5px',
+				borderTop: 'thin solid rgb(200,200,200)',
+				boxShadow: '0px 0px 6px black',
+				display: 'none',
+				fontFamily: 'arial',
+				color: 'black',
+				fontSize: '12px',
+				textAlign: 'center'
+			});
+			image.confirm_div.innerHTML = 'Are you sure? ';
+			image.yes_span = addElement('span', image.confirm_div, {
+				fontFamily: 'arial',
+				color: 'green',
+				fontSize: '12px',
+				fontWeight: 'bold',
+				marginLeft: '5px'
+			});
+			image.yes_span.innerHTML = 'Yes';
+			image.yes_span.onmouseover = function(e) {
+				image.yes_span.style.textDecoration = 'underline';
+			};
+			image.yes_span.onmouseout = function(e) {
+				image.yes_span.style.textDecoration = 'none';
+			};
+			image.yes_span.onclick = function(e) {
+				image.upload(img_obj);
+			};
+			image.no_span = addElement('span', image.confirm_div, {
+				fontFamily: 'arial',
+				color: 'red',
+				fontSize: '12px',
+				fontWeight: 'bold',
+				marginLeft: '5px'
+			});
+			image.no_span.innerHTML = 'Cancel';
+			image.no_span.onmouseover = function(e) {
+				image.no_span.style.textDecoration = 'underline';
+			};
+			image.no_span.onmouseout = function(e) {
+				image.no_span.style.textDecoration = 'none';
+			};
+			image.no_span.onclick = function(e) {
+				if (!e) var e = window.event;
+				e.cancelBubble = true;
+				if (e.stopPropagation) e.stopPropagation();
+				image.confirm_div.style.display = 'none';
+			};
+			image.upload = function(img) {
+				jsonP(properties.upload_script, {
+					img_url: img.src,
+					secret_key: encodeURIComponent(properties.secret_key),
+					directory: encodeURIComponent(properties.upload_directory)
+				}, function(data) {
+					image.confirm_div.style.display = 'none';
+					image.success_div = addElement('div', image.container, {
+						width: '100%',
+						position: 'absolute',
+						bottom: '0px',
+						left: '0px',
+						backgroundColor: 'white',
+						paddingTop: '5px',
+						paddingBottom: '5px',
+						borderTop: 'thin solid rgb(200,200,200)',
+						boxShadow: '0px 0px 6px black',
+						fontFamily: 'arial',
+						color: 'black',
+						fontSize: '12px',
+						textAlign: 'left'
+					});
+					image.success__label_div = addElement('div', image.success_div, {
+						fontFamily: 'arial',
+						color: 'green',
+						fontSize: '12px',
+						fontWeight: 'bold',
+						marginLeft: '5px'
+					});
+					image.success__label_div.innerHTML = 'Success!';
+					image.url_label_div = addElement('div', image.success_div, {
+						fontFamily: 'arial',
+						color: 'black',
+						fontSize: '12px',
+						fontWeight: 'bold',
+						marginLeft: '5px'
+					});
+					image.url_label_div.innerHTML = 'Image URL: ';
+					image.url_text_area = addElement('textarea', image.success_div, {
+						fontFamily: 'arial',
+						color: 'black',
+						fontSize: '11px',
+						width: '100%',
+						height: '35px',
+						border: 'none',
+						outline: 'none',
+						resize: 'none',
+						overflow: 'hidden',
+						marginLeft: '5px'
+					});
+					image.url_text_area.innerHTML = data.url;
+					image.url_text_area.select();
+					image.url_text_area.onclick = function() {
+						image.url_text_area.select();
+					};
+				});
+				image.confirm_div.innerHTML = 'Saving...';
+			};
 			image.container.onmouseover = function(e) {
-				image.container.style.backgroundColor = 'rgb(240,240,255)';
+				image.container.style.backgroundColor = 'rgb(230,230,230)';
 			};
 			image.container.onmouseout = function(e) {
 				image.container.style.backgroundColor = '';
 			};
 			image.container.onclick = function(e) {
-				uploadSetupPage(img_obj);
+				image.confirm_div.style.display = '';
+				for(var i = 0;i < drawn_images.length;i++) {
+					drawn_images[i].confirm_div.style.display = 'none';
+				};
+				image.confirm_div.style.display = '';
 			};
+			return image;
 		};
 		for(var i=0; i<document.images.length; i++){
 			var dim = elementDimensions(document.images[i]);
@@ -222,30 +354,17 @@ pResponse = (function() {
 			}
 		}
 		for(var n = 0;n<imgs.length;n++) {
-			draw_image(imgs[n]);
+			if(imgs[n].dim.height >= properties.min_image_h && imgs[n].dim.width >= properties.min_image_w) {
+				drawn_images.push(draw_image(imgs[n]));
+			}
 		}
-		for(var n = 0;n<imgs.length;n++) {
-			draw_image(imgs[n]);
-		}
-		for(var n = 0;n<imgs.length;n++) {
-			draw_image(imgs[n]);
-		}
-		for(var n = 0;n<imgs.length;n++) {
-			draw_image(imgs[n]);
-		}
-		
 		return imgs;
 	}
 	// Upload Screen
 	function uploadSetupPage(img_obj) {
-		jsonP(properties.upload_script, {
-			img_url: img_obj.src,
-			secret_key: encodeURIComponent(properties.secret_key),
-			directory: encodeURIComponent(properties.upload_directory)
-		}, function(data) {
-			images_screen.style.display = 'none';
-			upload_screen.style.display = '';
-		});
+		images_screen.style.display = 'none';
+		upload_screen.style.display = '';
+	
 	};
 	// Draw
 	var obscure = addElement('div', document.body, {
@@ -254,7 +373,8 @@ pResponse = (function() {
 			height: '100%',
 			top: '0px',
 			left: '0px',
-			backgroundColor: 'rgba(0,0,0,0.7)'
+			backgroundColor: 'rgba(0,0,0,0.7)',
+			zIndex: '9999'
 			
 		});
 	var main_container = addElement('div', obscure, {
@@ -289,6 +409,7 @@ pResponse = (function() {
 		bottom: '0px',
 		width: '100%',
 		overflow: 'auto',
+		backgroundColor: 'white',
 		zIndex: '0'
 	});
 	var upload_screen = addElement('div', main_container, {
@@ -297,17 +418,19 @@ pResponse = (function() {
 		bottom: '0px',
 		width: '100%',
 		overflow: 'auto',
+		backgroundColor: 'rgb(241, 237, 229)',
 		display: 'none'
 	});
+	var image_preview
+	
+	
 	function init() {
 		getAndDrawImages();
 	}
+	hideFlash();
 	init();
 	return pResponse;
 })();
-
-
-
 
 
 
