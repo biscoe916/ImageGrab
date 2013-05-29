@@ -5,24 +5,22 @@ $secret_key = "CHANGEME";
 $url = trim($_GET["img_url"]);
 $sk = urldecode($_GET["secret_key"]);
 $directory = urldecode($_GET["directory"]);
-$resp_str = $_GET['resp_str'];
 $new_image_name = rand(1,9999).basename($url);
-$return = array();
-$return['resp_str'] = $resp_str;
+$return = array("resp_str" => $_GET["resp_str"]);
 
 if(!$url || !$directory || !$sk || !$resp_str) { // Ensure we have all of the required data
-	$return['status'] = 'failed';
-	$return['fail_reason'] = 'Missing Data';
+	$return["status"] = "failed";
+	$return["fail_reason"] = "Missing Data";
 } elseif($secret_key != $sk) { // Make sure we're authorized
-	$return['status'] = 'failed';
-	$return['fail_reason'] = 'Unauthorized: Keys must match.';
+	$return["status"] = "failed";
+	$return["fail_reason"] = "Unauthorized: Keys must match.";
 } else {
 	if(file_put_contents($new_image_name, file_get_contents($url))) {
-		$return['status'] = 'success';
-		$return['url'] = $directory.$new_image_name;
+		$return["status"] = "success";
+		$return["url"] = $directory.$new_image_name;
 	} else {
-		$return['status'] = 'failed';
-		$return['fail_reason'] = 'Unknown Error';
+		$return["status"] = "failed";
+		$return["fail_reason"] = "Unknown Error";
 	}
 }
 ?>
