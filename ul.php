@@ -5,7 +5,7 @@ $secret_key = "CHANGEME";
 $url = urldecode($_GET["img_url"]);
 $sk = urldecode($_GET["secret_key"]);
 $file_path = urldecode($_GET["directory"]).rand(1,9999).basename($url);
-$return = array("resp_str" => $_GET["resp_str"]);
+$return = array("resp_str" => urldecode($_GET["resp_str"]));
 
 if(!$url || !$file_path || !$sk) { // Ensure we have all of the required data
 	$return["status"] = "failed";
