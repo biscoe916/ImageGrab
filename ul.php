@@ -5,7 +5,8 @@ $secret_key = "CHANGEME";
 $url = urldecode($_GET["img_url"]);
 $sk = urldecode($_GET["secret_key"]);
 $file_path = urldecode($_GET["directory"]).rand(1,9999).basename($url);
-$return = array("resp_str" => $_GET["resp_str"]);
+$resp_str = $_GET["resp_str"]
+$return = array("resp_str" => $resp_str);
 if(!$url || !$file_path || !$sk || !$resp_str) { // Ensure we have all of the required data
 	$return["status"] = "failed";
 	$return["fail_reason"] = "Missing Data";
@@ -21,4 +22,5 @@ if(!$url || !$file_path || !$sk || !$resp_str) { // Ensure we have all of the re
 		$return["fail_reason"] = "Unknown Error";
 	}
 }
+echo 'pResponse('.json_encode($return).')';
 ?>
