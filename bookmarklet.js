@@ -1,14 +1,14 @@
-(function() {
+pResponse = (function() {
 	'use strict';
 	// Properties
 	var properties = {
 		upload_script: 'http://www.tylerbiscoe.com/testbook/ul.php',
+		upload_directory: '//www.tylerbiscoe.com/testbook/',
 		secret_key: 'CHANGEME', // Update secret key in ul.php, or whichever custom upload script you use to match this key.
 		min_image_h: 60,
 		min_image_w: 60,
-		check_iframes: true 
-	};
-	
+		check_iframes: true
+	}, resp_fns = {};
 	// Helper functions
 	function is_set(o) {
 		return o !== undefined ? true : false;
@@ -123,6 +123,13 @@
 	function getIframeDocument(iFrame) {
 		return iFrame.contentDocument ? iFrame.contentDocument : iFrame.contentWindow.document;
 	}
+	function gen_uuid (length) {
+		var random = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+			var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+			return v.toString(16);
+		});
+		return typeof length !== 'undefined' ? random.substring(0, length > 36 ? 36 : length) : random;
+	}
 	function loadScript(src, callback_fn) {
 		var s1 = document.createElement('script');
 		s1.type = 'text/javascript';
@@ -135,26 +142,24 @@
 		};
 		s1.onload = callback_fn;
 	}
-	function ajax_tx(script, args, callback_fn) {
+	function jsonP(script, args, callback_fn) {
 		var full_url = script +'?', ret, xmlhttp;
 		for(var ind in args) {
 			full_url +=ind + '=' + args[ind] +'&';
 		}
-		if(window.XMLHttpRequest) {
-			xmlhttp=new XMLHttpRequest();
-		} else {
-			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-		}
-		xmlhttp.onreadystatechange=function() {
-			if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-				ret = JSON.parse(xmlhttp.responseText);
-				callback_fn(ret);
-			}
-		}
-		xmlhttp.open("GET",full_url,true);
-		xmlhttp.send();
+		var rand = gen_uuid();
+		full_url += 'resp_str=' + rand;
+		resp_fns[rand] = callback_fn;
+		console.log(rand);
+		loadScript(full_url, function() {
+			console.log('Do nothing');
+		});
 	}
-	
+	function pResponse(data) {
+		if(typeof resp_fns[data.resp_str] !== 'undefined') {
+			resp_fns[data.resp_str](data);
+		}
+	}
 	// Hide flash embeds, fix for this may come later.
 	function hideFlash() {
 		var embed = document.getElementsByTagName('embed');
@@ -169,8 +174,6 @@
 			object[i].style.visibility = 'hidden';
 		}
 	}
-
-
 	// Returns an array of all images on the page
 	function getAndDrawImages() {
 		var imgs = [], ind;
@@ -233,24 +236,17 @@
 		
 		return imgs;
 	}
-	
 	// Upload Screen
 	function uploadSetupPage(img_obj) {
-		/*var src = properties.upload_script+'?img_url='+img_obj.src+'&secret_key='+properties.secret_key;
-		var iframe = addElement('iframe', upload_screen, {
-			width: '100%', 
-			height: '100%'
-		}, {src: src});*/
-		ajax_tx(properties.upload_script, {
+		jsonP(properties.upload_script, {
 			img_url: img_obj.src,
-			secret_key: properties.secret_key
+			secret_key: encodeURIComponent(properties.secret_key),
+			directory: encodeURIComponent(properties.upload_directory)
 		}, function(data) {
-			console.log('Data:', data);
+			images_screen.style.display = 'none';
+			upload_screen.style.display = '';
 		});
-		images_screen.style.display = 'none';
-		upload_screen.style.display = '';
 	};
-	
 	// Draw
 	var obscure = addElement('div', document.body, {
 			position: 'fixed',
@@ -303,11 +299,11 @@
 		overflow: 'auto',
 		display: 'none'
 	});
-
 	function init() {
 		getAndDrawImages();
 	}
 	init();
+	return pResponse;
 })();
 
 
