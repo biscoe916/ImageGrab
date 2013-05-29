@@ -315,15 +315,15 @@ var pResponse = (function() {
 	}
 	// Draw
 	var obscure = addElement('div', document.body, {
-			position: 'fixed',
-			width: '100%',
-			height: '100%',
-			top: '0px',
-			left: '0px',
-			backgroundColor: 'rgba(0,0,0,0.7)',
-			zIndex: '9999'
-			
-		});
+		position: 'fixed',
+		width: '100%',
+		height: '100%',
+		top: '0px',
+		left: '0px',
+		backgroundColor: 'rgba(0,0,0,0.7)',
+		zIndex: '9999'
+		
+	});
 	var main_container = addElement('div', obscure, {
 		position: 'fixed',
 		width: '80%',
