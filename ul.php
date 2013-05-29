@@ -5,9 +5,9 @@ $secret_key = "CHANGEME";
 $url = urldecode($_GET["img_url"]);
 $sk = urldecode($_GET["secret_key"]);
 $file_path = urldecode($_GET["directory"]).rand(1,9999).basename($url);
-$resp_str = $_GET["resp_str"]
-$return = array("resp_str" => $resp_str);
-if(!$url || !$file_path || !$sk || !$resp_str) { // Ensure we have all of the required data
+$return = array("resp_str" => $_GET["resp_str"]);
+
+if(!$url || !$file_path || !$sk) { // Ensure we have all of the required data
 	$return["status"] = "failed";
 	$return["fail_reason"] = "Missing Data";
 } elseif($secret_key != $sk) { // Make sure we're authorized
