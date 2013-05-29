@@ -1,7 +1,7 @@
 ImageGrab
 =========
 
-ImageGrab allows you, with just 2-clicks, to easily save images from websites to the server of your choice using a bookmarklet and short php script.
+With just 2-clicks, ImageGrab allows you to quickly and easily save images from websites to the server of your choice using a bookmarklet and short php script.
 
 #####Notes: 
 - allow_url_fopen should be enabled in php.ini
