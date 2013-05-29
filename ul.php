@@ -7,24 +7,23 @@ $url = trim($_GET["img_url"]);
 $sk = urldecode($_GET["secret_key"]);
 $directory = urldecode($_GET["directory"]);
 $resp_str = $_GET['resp_str'];
-// Do we have all of the data?
+
+// Return object
+$return = array();
+$return['resp_str'] = $resp_str;
+
+// Attempt to copy the file
 if(!$url || !$directory || !$sk || !$resp_str) {
 	$return['status'] = 'failed';
 	$return['fail_reason'] = 'Insufficient Data';
-	$return['resp_str'] = $resp_str;
-	echo 'pResponse('.json_encode($return).');';
 } elseif($secret_key != $sk) {
 	$return['status'] = 'failed';
 	$return['fail_reason'] = 'Unauthorized: Keys must match.';
-	$return['resp_str'] = $resp_str;
-	echo 'pResponse('.json_encode($return).');';
 } else {
 	$new_img = rand(1,9999).basename($url);
 	file_put_contents($new_img, file_get_contents($url));
-	$return = array();
 	$return['status'] = 'success';
 	$return['url'] = $directory.$new_img;
-	$return['resp_str'] = $resp_str;
-	echo 'pResponse('.json_encode($return).');';
 }
+echo 'pResponse('.json_encode($return).');';
 ?>
