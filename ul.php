@@ -12,11 +12,18 @@ if(!$url || !$directory || !sk) {
 	exit;
 }
 // Save
-$new_img = rand(1,9999).basename($url);
-file_put_contents($new_img, file_get_contents($url));
-$return = array();
-$return['status'] = 'success';
-$return['url'] = $directory.$new_img;
-$return['resp_str'] = $resp_str;
-echo 'pResponse('.json_encode($return).');';
+if($secret_key == $sk) {
+	$new_img = rand(1,9999).basename($url);
+	file_put_contents($new_img, file_get_contents($url));
+	$return = array();
+	$return['status'] = 'success';
+	$return['url'] = $directory.$new_img;
+	$return['resp_str'] = $resp_str;
+	echo 'pResponse('.json_encode($return).');';
+} else {
+	$return['status'] = 'failed';
+	$return['fail_reason'] = 'Unauthorized: Keys must match.';
+	$return['resp_str'] = $resp_str;
+	echo 'pResponse('.json_encode($return).');';
+}
 ?>

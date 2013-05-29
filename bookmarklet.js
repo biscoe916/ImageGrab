@@ -218,55 +218,63 @@ var pResponse = (function() {
 					secret_key: encodeURIComponent(properties.secret_key),
 					directory: encodeURIComponent(properties.upload_directory)
 				}, function(data) {
-					image.confirm_div.style.display = 'none';
-					image.success_div = addElement('div', image.container, {
-						width: '100%',
-						position: 'absolute',
-						bottom: '0px',
-						left: '0px',
-						backgroundColor: 'white',
-						paddingTop: '5px',
-						paddingBottom: '5px',
-						borderTop: 'thin solid rgb(200,200,200)',
-						boxShadow: '0px 0px 6px black',
-						fontFamily: 'arial',
-						color: 'black',
-						fontSize: '12px',
-						textAlign: 'left'
-					});
-					image.success__label_div = addElement('div', image.success_div, {
-						fontFamily: 'arial',
-						color: 'green',
-						fontSize: '12px',
-						fontWeight: 'bold',
-						marginLeft: '5px'
-					});
-					image.success__label_div.innerHTML = 'Success!';
-					image.url_label_div = addElement('div', image.success_div, {
-						fontFamily: 'arial',
-						color: 'black',
-						fontSize: '12px',
-						fontWeight: 'bold',
-						marginLeft: '5px'
-					});
-					image.url_label_div.innerHTML = 'Image URL: ';
-					image.url_text_area = addElement('textarea', image.success_div, {
-						fontFamily: 'arial',
-						color: 'black',
-						fontSize: '11px',
-						width: '100%',
-						height: '35px',
-						border: 'none',
-						outline: 'none',
-						resize: 'none',
-						overflow: 'hidden',
-						marginLeft: '5px'
-					});
-					image.url_text_area.innerHTML = data.url;
-					image.url_text_area.select();
-					image.url_text_area.onclick = function() {
+					if(data.status === 'success') {
+						image.confirm_div.style.display = 'none';
+						image.success_div = addElement('div', image.container, {
+							width: '100%',
+							position: 'absolute',
+							bottom: '0px',
+							left: '0px',
+							backgroundColor: 'white',
+							paddingTop: '5px',
+							paddingBottom: '5px',
+							borderTop: 'thin solid rgb(200,200,200)',
+							boxShadow: '0px 0px 6px black',
+							fontFamily: 'arial',
+							color: 'black',
+							fontSize: '12px',
+							textAlign: 'left'
+						});
+						image.success__label_div = addElement('div', image.success_div, {
+							fontFamily: 'arial',
+							color: 'green',
+							fontSize: '12px',
+							fontWeight: 'bold',
+							marginLeft: '5px'
+						});
+						image.success__label_div.innerHTML = 'Success!';
+						image.url_label_div = addElement('div', image.success_div, {
+							fontFamily: 'arial',
+							color: 'black',
+							fontSize: '12px',
+							fontWeight: 'bold',
+							marginLeft: '5px'
+						});
+						image.url_label_div.innerHTML = 'Image URL: ';
+						image.url_text_area = addElement('textarea', image.success_div, {
+							fontFamily: 'arial',
+							color: 'black',
+							fontSize: '11px',
+							width: '100%',
+							height: '35px',
+							border: 'none',
+							outline: 'none',
+							resize: 'none',
+							overflow: 'hidden',
+							marginLeft: '5px'
+						});
+						image.url_text_area.innerHTML = data.url;
+						image.url_text_area.select();
+						image.url_text_area.onclick = function() {
 						image.url_text_area.select();
 					};
+					} else if(data.status === 'failed') {
+						image.confirm_div.style.color = 'red';
+						image.confirm_div.innerHTML = data.fail_reason;
+					} else {
+						image.confirm_div.style.color = 'red';
+						image.confirm_div.innerHTML = 'Failed';
+					}
 				});
 				image.confirm_div.innerHTML = 'Saving...';
 			};
