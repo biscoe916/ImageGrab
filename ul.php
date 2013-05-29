@@ -2,7 +2,7 @@
 // Secret key. This must match the secret key in bookmarklet.js
 $secret_key = "CHANGEME";
 // Get/Set values
-$url = trim($_GET["img_url"]);
+$url = urldecode($_GET["img_url"]);
 $sk = urldecode($_GET["secret_key"]);
 $file_path = urldecode($_GET["directory"]).rand(1,9999).basename($url);
 $return = array("resp_str" => $_GET["resp_str"]);
